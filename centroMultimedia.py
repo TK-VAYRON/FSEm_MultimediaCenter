@@ -29,61 +29,65 @@ import tkSnack
 x11 = ctypes.cdll.LoadLibrary('libX11.so')
 x11.XInitThreads()
 
-#Función para abrir Spotify con el navegador cromium.
+#Función para abrir Spotify con el navegador chromium.
 def abrir_Spotify():
 	navegador=webbrowser.get("chromium-browser")
-	#navegador=webbrowser.get("crommium")
-	navegador.open("https://open.spotify.com/",new=2, autoraise=True)
+	#navegador=webbrowser.get("chromium")
+	#navegador.open("https://open.spotify.com/",new=2, autoraise=True)
+	navegador.open("https://accounts.spotify.com/es/login",new=2, autoraise=True)
 
-#Función para abrir apple music con el navegador cromium.
+#Función para abrir apple music con el navegador chromium.
 def abrir_apple():
 	#navegador=webbrowser.get("chromium")
 	navegador=webbrowser.get("chromium-browser")
 	navegador.open("https://www.apple.com/mx/apple-music/",new=2, autoraise=True)
 
-#Función para abrir Deezer con el navegador cromium.
+#Función para abrir Deezer con el navegador chromium.
 def abrir_Deezer():
 	#navegador=webbrowser.get("chromium")
 	navegador=webbrowser.get("chromium-browser")
 	navegador.open("https://www.deezer.com/us/login",new=2, autoraise=True)
 
-#Función para abrir Google Music con el navegador cromium.
+#Función para abrir Google Music con el navegador chromium.
 def abrir_googleMusic():
 	#navegador=webbrowser.get("chromium")
 	navegador=webbrowser.get("chromium-browser")
 	navegador.open("https://music.youtube.com/",new=2, autoraise=True)
 
-#Funcion para abrir Youtube con el navegador cromium
+#Funcion para abrir Youtube con el navegador chromium
 def abrir_youtube():
 	#vavegador=webbrowser.get("chromium")
 	navegador=webbrowser.get("chromium-browser")
 	vavegador.open("https://www.youtube.com/", new=2, autoraise=True)
 
-#Función para abrir con el navegador cromium.
+#Función para abrir con el navegador chromium.
 def abrir_Blim():
 	#navegador=webbrowser.get("chromium")
 	navegador=webbrowser.get("chromium-browser")
-	navegador.open("https://www.blim.com/inicio",new=2, autoraise=True)
+	#navegador.open("https://www.blim.com/inicio",new=2, autoraise=True)
+	navegador.open("https://www.blim.com/cuenta/ingresar",new=2, autoraise=True)
 
-#Función para abrir Disney Plus con el navegador cromium.
+#Función para abrir Disney Plus con el navegador chromium.
 def abrir_Disney():
 	#navegador=webbrowser.get("chromium")
 	navegador=webbrowser.get("chromium-browser")
 	navegador.open("https://www.disneyplus.com/login/",new=2, autoraise=True)
 
-#Función para abrir HBO con el navegador cromium.
+#Función para abrir HBO con el navegador chromium.
 def abrir_HBO():
 	#navegador=webbrowser.get("chromium")
 	navegador=webbrowser.get("chromium-browser")
-	navegador.open("https://www.hbomax.com/mx/es",new=2, autoraise=True)
+	#navegador.open("https://www.hbomax.com/mx/es",new=2, autoraise=True)
+	navegador.open("https://play.hbomax.com/login",new=2, autoraise=True)
 
-#Función para abrir con el navegador cromium.
+#Función para abrir con el navegador chromium.
 def abrir_Netflix():
 	#navegador=webbrowser.get("chromium")
 	navegador=webbrowser.get("chromium-browser")
-	navegador.open("https://www.netflix.com/browse",new=2, autoraise=True)
+	#navegador.open("https://www.netflix.com/browse",new=2, autoraise=True)
+	navegador.open("https://www.netflix.com/mx/login",new=2, autoraise=True)
 
-#Función para abrir Hulu con el navegador cromium.
+#Función para abrir Hulu con el navegador chromium.
 def abrir_hulu():
 	#navegador=webbrowser.get("chromium")
 	navegador=webbrowser.get("chromium-browser")
