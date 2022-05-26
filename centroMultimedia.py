@@ -23,7 +23,8 @@ from getpass import getuser
 import pathlib
 from PIL import Image,ImageTk
 from playsound import playsound
-import tkSnack
+import audioread
+import mutagen
 
 #Cargamos el cdll para arreglar el correcto uso del display
 x11 = ctypes.cdll.LoadLibrary('libX11.so')
@@ -178,39 +179,33 @@ def info_usbs(root,nombre):
 
 	pantalla_infoUSB.mainloop()
 
-def abre_audio(root,path, archivos):
+def next_audio(numero, audios,path):
+	if numero != len(audios)-1:
+		numero +=1
+		print("Reproduciendo audio", numero)
+		mixer.init()
+		mixer.music.load(path+audios[numero])
+		mixer.music.set_volume(0.3)
+		mixer.music.play()
+
+def terminar_rep(root):
 	root.destroy()
-	pantalla_rep=Tk()
-	pantalla_rep.geometry("300x300")
 
-	#Asignamos la ruta del archivo al reproductor
-	mixer.init()
-	mixer.music.load(path+archivos[0])
-	mixer.music.set_volume(0.5)
-	mixer.music.play()
-
-	boton_fin=Button(root,text="Terminar",height=5, width=5,command=lambda:terminar(pantalla_rep,path))
-	boton_fin.place(x=30,y=30)
+def crea_reproductor(root, path, archivos_music,nombre):
 	
-	pantalla_rep.mainloop()
-
-def terminar(root,path):
-	global s 
-	s = False
-	'''inicio=0
-	fin=0
-	cont=0
-	for i in range(len(path)):
-		if path[i]=="/":
-			cont+=1
-			if cont == 3:
-				inicio = i
-			if cont == 4:
-				fin = i
+	for i in range(-1,len(archivos_music)):
 	
-	info_usbs(root, path[inicio:fin])
-	'''
-	return s
+		audio = mutagen.File(path+archivos_music[i])
+		duracion = audio.info.length
+		min, seg = divmod(duracion,60)
+		min, seg = int(min), int(seg)
+		tt=min*60 +seg
+		next_audio(i,archivos_music,path)
+		time.sleep(tt-5)
+	muestra_musica(root,nombre)
+
+def nueva_rep(root,path,archivos_music,nombre):
+	crea_reproductor(root,path,archivos_music,nombre)
 
 def muestra_musica(root,nombre):
 	root.destroy()
@@ -235,11 +230,15 @@ def muestra_musica(root,nombre):
 		if formato == ".mp3":
 			nombre_archivo=str(fichero)
 			archivos_music.append(nombre_archivo[len(path):])
-	song = filedialog.askopenfile(initialdir=path+archivos_music[0])
 	
-	boton_atras=Button(pantalla_musica,text="Detener",height=5, width=20,command=lambda:info_usbs(pantalla_musica,nombre))
-	boton_atras.place(x=450,y=250)
+	for audio in archivos_music:
+			titulo=Label(pantalla_musica,text=audio)
+			titulo.pack()
+	sigue = True
 
+	boton_atras=Button(pantalla_musica,text="Repetir",height=5, width=20,command=lambda:nueva_rep(pantalla_musica,path,archivos_music,nombre))
+	boton_atras.place(x=150,y=50)
+	
 	#Boton para regresar a la pantalla anterior
 	im_regresar=PhotoImage(file='atras_logo.png')
 	boton_atras=Button(pantalla_musica,image=im_regresar,height=150, width=150,command=lambda:info_usbs(pantalla_musica,nombre))
