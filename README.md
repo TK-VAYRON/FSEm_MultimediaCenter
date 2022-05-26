@@ -6,7 +6,7 @@ Autores:
          - Colohua Carvajal Daniela
          - Corona Carrillo Emmanuel 
          - Cruz Plata Eduardo
-         - Higareda López Carlos A.
+         - Higareda López Carlos Alberto
 
 Pasos para la ejecución del Centro Multimedia
 
