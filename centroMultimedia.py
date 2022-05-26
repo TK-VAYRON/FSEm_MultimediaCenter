@@ -236,7 +236,7 @@ def muestra_musica(root,nombre):
 			titulo.pack()
 	sigue = True
 
-	boton_atras=Button(pantalla_musica,text="Repetir",height=5, width=20,command=lambda:nueva_rep(pantalla_musica,path,archivos_music,nombre))
+	boton_atras=Button(pantalla_musica,text="INICIAR",height=5, width=20,command=lambda:nueva_rep(pantalla_musica,path,archivos_music,nombre))
 	boton_atras.place(x=150,y=50)
 	
 	#Boton para regresar a la pantalla anterior
@@ -287,13 +287,57 @@ def muestra_imagen(root,nombre):
 
 	pantalla_imagen.mainloop()
 
-def muestra_video(root,nombre):
+def lista_video(root,videos,nombre):
 	root.destroy()
 	pantalla_video = Tk()
 	pantalla_video.title("Archivos de Video")
 	pantalla_video.attributes('-fullscreen', True) #Maximiza la pantalla
 	#geometry('1100x700')
 	pantalla_video.config(bg="#e89541")
+	
+	nombre_titulo=[]
+	botones = []
+	for i in range(len(videos)):
+		nombre_titulo.append("text"+str(i))
+		botones.append("boton"+str(i))
+
+	for i in range(len(nombre_titulo)):
+		nombre_titulo[i]=Label(pantalla_video,text=str(i) + " --> " + videos[i])
+		nombre_titulo[i].pack()
+		#Boton para seleccionar archivo
+	
+	#seleccionar=Text(pantalla_video,height=1, width=5)
+	#seleccionar.pack()
+	boton_sel=Button(pantalla_video, height=1, width=10, text="Seleccionar", command=lambda:abre_video(pantalla_video,path,videos))
+	boton_sel.pack()
+
+	#Boton para regresar a la pantalla anterior
+	im_regresar=PhotoImage(file='atras_logo.png')
+	boton_atras=Button(pantalla_video,image=im_regresar,height=150, width=150,command=lambda:info_usbs(pantalla_video,nombre))
+	boton_atras.place(x=800,y=500)
+
+	pantalla_video.mainloop()
+
+def reproduce_videos(root,path,archivos):
+
+	for video in archivos:
+		vlc_instance = vlc.Instance()
+		player = vlc_instance.media_player_new()
+		media = vlc_instance.media_new(path+video)
+		player.set_media(media)
+		player.play()
+		time.sleep(1.5)
+		duration = player.get_length() / 1000
+		time.sleep(duration)
+		player.stop()
+
+def muestra_video(root,nombre):
+	root.destroy()
+	pantalla_opciones = Tk()
+	pantalla_opciones.title("Opciones de reproduccion")
+	pantalla_opciones.attributes('-fullscreen', True) #Maximiza la pantalla
+	#geometry('1100x700')
+	pantalla_opciones.config(bg="#e89541")
 
 	#Se obtiene el nombre del usuario
 	user=getuser()
@@ -307,46 +351,25 @@ def muestra_video(root,nombre):
 		if formato == ".mp4" or formato==".wave":
 			nombre_archivo=str(fichero)
 			archivos_video.append(nombre_archivo[len(path):])
-	
+		
+	#Boton para reproducir todos los videos
+	boton_todos=Button(pantalla_opciones,text="Reproducir todos",height=5, width=15,command=lambda:reproduce_videos(pantalla_opciones,path,archivos_video))
+	boton_todos.place(x=200,y=200)
 	nombre_titulo=[]
 	botones = []
 	for i in range(len(archivos_video)):
 		nombre_titulo.append("text"+str(i))
 		botones.append("boton"+str(i))
-	print(nombre_titulo)
-	
-	for i in range(len(nombre_titulo)):
-		nombre_titulo[i]=Label(pantalla_video,text=str(i) + " --> " + archivos_video[i])
-		nombre_titulo[i].pack()
-		#Boton para seleccionar archivo
-	
-	seleccionar=Text(pantalla_video,height=1, width=5)
-	seleccionar.pack()
-	boton_sel=Button(pantalla_video, height=1, width=10, text="Seleccionar", command=lambda:abre_video(seleccionar,path,archivos_video))
-	boton_sel.pack()
+	#Boton para elegir video
+	boton_elegir=Button(pantalla_opciones,text="Elegir video",height=5, width=15, command=lambda:lista_video(pantalla_opciones,archivos_video,nombre))
+	boton_elegir.place(x=500,y=200)
 
 	#Boton para regresar a la pantalla anterior
 	im_regresar=PhotoImage(file='atras_logo.png')
-	boton_atras=Button(pantalla_video,image=im_regresar,height=150, width=150,command=lambda:info_usbs(pantalla_video,nombre))
+	boton_atras=Button(pantalla_opciones,image=im_regresar,height=150, width=150,command=lambda:info_usbs(pantalla_opciones,nombre))
 	boton_atras.place(x=800,y=500)
 
-	pantalla_video.mainloop()
-
-def abre_musica(texto,path, archivos):
-	result= texto.get("1.0","end")
-	for i in range(len(archivos)+1):
-		if i == int(result):
-			abrir = vlc.MediaPlayer(path+archivos[i])
-			abrir.play()
-
-def abre_video(texto,path, archivos):
-	result= texto.get("1.0","end")
-	for i in range(len(archivos)+1):
-		if i == int(result):
-			abrir = vlc.MediaPlayer(path+archivos[i])
-			print(path+archivos[i])
-			abrir.play()
-	
+	pantalla_opciones.mainloop()
 #Función para la pantalla del menu principal
 def menu(root):
 	#Se destruye la ventana recibida.
