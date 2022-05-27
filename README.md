@@ -11,11 +11,15 @@ Autores:
 Pasos para la ejecución del Centro Multimedia
 
 1. Abrir la terminal para ejecutar los sigiuentes comandos
+   
+   sudo apt update
    sudo apt-get install python,
    sudo apt-get install python-pygame , 
-	 sudo apt-get install libx11-dev,
+   sudo apt-get install libx11-dev,
    pip3 install python-vlc ,
    sudo apt-get install python-tk,
+   pip install mutagen
+   pip install audioread
 
 2. Descargue la carpeta nuestro repositorio de Github, con el siguiente comando:
    git clone https://github.com/TK-VAYRON/FSEm_MultimediaCenter
