@@ -115,21 +115,22 @@ def leer_usbs(root):
 	#Se cuentan las usbs disponibles
 	total_usbs = len(usbs)
 	botonUsb = []
-	pos_x = 100
-	pos_y = 100
-	
+
 	if total_usbs > 0:
 		if total_usbs >= 1:
 			boton_Usb1=Button(pantalla_usbs,text=usbs[0],bg="#F64A5C", command=lambda:info_usbs(pantalla_usbs,usbs[0]))
 			boton_Usb1.place(x=100,y=100)
+
 			if total_usbs >=2:
 				boton_Usb2=Button(pantalla_usbs,text=usbs[1],bg="#F64A5C", command=lambda:info_usbs(pantalla_usbs,usbs[1]))
 				boton_Usb2.place(x=100,y=200)
+
 				if total_usbs >= 3:
 					boton_Usb3=Button(pantalla_usbs,text=usbs[2],bg="#F64A5C", command=lambda:info_usbs(pantalla_usbs, usbs[2]))
 					boton_Usb3.place(x=100,y=300)
 	else:
 		print("No hay dispositivos conectados")
+
 	#Boton para regresar a la pantalla anterior
 	im_regresar=PhotoImage(file='atras_logo.png')
 	boton_atras=Button(pantalla_usbs,image=im_regresar,height=150, width=150,command=lambda:menu(pantalla_usbs))
@@ -151,6 +152,7 @@ def leer_usbs(root):
 	
 	pantalla_usbs.mainloop()
 
+
 def info_usbs(root,nombre):
 	root.destroy()
 	pantalla_infoUSB = Tk()
@@ -159,26 +161,61 @@ def info_usbs(root,nombre):
 	pantalla_infoUSB.attributes('-fullscreen', True) #Maximiza la pantalla
 	#geometry('1100x700')
 	pantalla_infoUSB.config(bg="#e89541")
+	#Se obtiene el directorio de la usb
+	user=getuser()
+	usb0="/media/"+user+"/" + nombre+"/"
+	#Obtiene los archivos de la usb
+	directorio = pathlib.Path(usb0)
 
-	im_music=PhotoImage(file='music_logo.png')
-	boton_music=Button(pantalla_infoUSB,image=im_music,height=150, width=150, command=lambda:muestra_musica(pantalla_infoUSB,nombre))
-	boton_music.place(x=200,y=210)
+	#Se crea una lista con los tipos de formato que tiene la usb actual
+	formatos=[]
+	for fichero in directorio.iterdir():
+		formato = fichero.suffix #obtiene el formato de un archivo
+		formatos.append(formato)
+	
+	#Se recorren los formatos de los archivos de la usb para saber si solo hay un tipo de archivo o varios
+	#True si solo es un tipo, False si son varios
+	bandera = True
+	for i in range(len(formatos)-1):
+		if formatos[i] != formatos[i+1]:
+			if (formatos[i] == ".mp4" or formatos[i] == ".wav") and (formatos[i+1] == ".mp4" or formatos[i+1] == ".wav"):
+				bandera = True
+			elif (formatos[i]==".png" or formatos[i]==".jpg" or formatos[i]=="gif") and (formatos[i+1]==".png" or formatos[i+1]==".jpg" or formatos[i+1]=="gif"):
+				bandera = True
+			else:
+				bandera = False
+		tipo = formatos[1]
 
-	im_image=PhotoImage(file='image_logo.png')
-	boton_image=Button(pantalla_infoUSB,image=im_image,height=150, width=150, command=lambda:muestra_imagen(pantalla_infoUSB,nombre))
-	boton_image.place(x=400,y=210)
+	#Si hay varios tipos se despligan las opciones
+	#Si hay un solo tipo sólo se llama a la funcion correspondiente
+	if bandera == True:
+		if tipo == ".mp3":
+			solo_musica(pantalla_infoUSB,nombre)
+		elif tipo == ".mp4" or tipo == ".wav":
+			solo_video(pantalla_infoUSB,nombre)
+		elif tipo == ".png" or tipo ==".jpg" or tipo == ".gif":
+			solo_imagen(pantalla_infoUSB,nombre)
+	else:
+		im_music=PhotoImage(file='music_logo.png')
+		boton_music=Button(pantalla_infoUSB,image=im_music,height=150, width=150, command=lambda:muestra_musica(pantalla_infoUSB,nombre))
+		boton_music.place(x=200,y=210)
 
-	im_video=PhotoImage(file='video_logo.png')
-	boton_video=Button(pantalla_infoUSB,image=im_video,height=150, width=150, command=lambda:muestra_video(pantalla_infoUSB,nombre))
-	boton_video.place(x=600,y=210)
+		im_image=PhotoImage(file='image_logo.png')
+		boton_image=Button(pantalla_infoUSB,image=im_image,height=150, width=150, command=lambda:muestra_imagen(pantalla_infoUSB,nombre))
+		boton_image.place(x=400,y=210)
 
-	#Boton para regresar a la pantalla anterior
-	im_regresar=PhotoImage(file='atras_logo.png')
-	boton_atras=Button(pantalla_infoUSB,image=im_regresar,height=150, width=150,command=lambda:leer_usbs(pantalla_infoUSB))
-	boton_atras.place(x=800,y=500)
+		im_video=PhotoImage(file='video_logo.png')
+		boton_video=Button(pantalla_infoUSB,image=im_video,height=150, width=150, command=lambda:muestra_video(pantalla_infoUSB,nombre))
+		boton_video.place(x=600,y=210)
+
+		#Boton para regresar a la pantalla anterior
+		im_regresar=PhotoImage(file='atras_logo.png')
+		boton_atras=Button(pantalla_infoUSB,image=im_regresar,height=150, width=150,command=lambda:leer_usbs(pantalla_infoUSB))
+		boton_atras.place(x=800,y=500)
 
 	pantalla_infoUSB.mainloop()
 
+#Funcion para pasar a la siguiente cancion
 def next_audio(numero, audios,path):
 	if numero != len(audios)-1:
 		numero +=1
@@ -188,26 +225,69 @@ def next_audio(numero, audios,path):
 		mixer.music.set_volume(0.3)
 		mixer.music.play()
 
-def terminar_rep(root):
-	root.destroy()
-
+#Función para comenzar con la reproduccion de audios
 def crea_reproductor(root, path, archivos_music,nombre):
-	
-	for i in range(-1,len(archivos_music)):
-	
-		audio = mutagen.File(path+archivos_music[i])
-		duracion = audio.info.length
-		min, seg = divmod(duracion,60)
-		min, seg = int(min), int(seg)
-		tt=min*60 +seg
-		next_audio(i,archivos_music,path)
-		time.sleep(tt-5)
-	muestra_musica(root,nombre)
+	try:
+		for i in range(-1,len(archivos_music)):
+			#Se obtiene el tamaño del audio
+			audio = mutagen.File(path+archivos_music[i])
+			duracion = audio.info.length
+			min, seg = divmod(duracion,60)
+			min, seg = int(min), int(seg)
+			tt=min*60 +seg
+			next_audio(i,archivos_music,path)
+			#Se espera a que el audio termine para reproducir la siguiente
+			time.sleep(tt-5)
+		muestra_musica(root,nombre)
+	except:
+		print("NO hay archivos disponibles")
 
+#Función para indicar que se solicitó la reproduccion
 def nueva_rep(root,path,archivos_music,nombre):
 	crea_reproductor(root,path,archivos_music,nombre)
 
+#Funcion para reproducir audios
 def muestra_musica(root,nombre):
+	root.destroy()
+	pantalla_musica = Tk()
+	pantalla_musica.title("Reproductor")
+	pantalla_musica.attributes('-fullscreen', True) #Maximiza la pantalla
+	#geometry('1100x700')
+	pantalla_musica.config(bg="#e89541")
+
+	pygame.mixer.init()
+
+	#Se obtiene el nombre del usuario
+	user=getuser()
+	#Se especifica el directorio que contiene las usb
+	path="/media/"+user+"/" + nombre+"/"
+	directorio = pathlib.Path(path)
+
+	#Se crea una lista con todos los archivos de audio
+	archivos_music=[]
+	for fichero in directorio.iterdir():
+		formato = fichero.suffix
+		if formato == ".mp3" or formato == ".wav":
+			nombre_archivo=str(fichero)
+			archivos_music.append(nombre_archivo[len(path):])
+	
+	#Muestra en pantalla los títulos de los audios
+	for audio in archivos_music:
+			titulo=Label(pantalla_musica,text=audio)
+			titulo.pack()
+	#Boton para iniciar reproducción
+	boton_atras=Button(pantalla_musica,text="INICIAR",height=5, width=20,command=lambda:nueva_rep(pantalla_musica,path,archivos_music,nombre))
+	boton_atras.place(x=150,y=50)
+	
+	#Boton para regresar a la pantalla anterior
+	im_regresar=PhotoImage(file='atras_logo.png')
+	boton_atras=Button(pantalla_musica,image=im_regresar,height=150, width=150,command=lambda:info_usbs(pantalla_musica,nombre))
+	boton_atras.place(x=800,y=500)
+
+	pantalla_musica.mainloop()
+
+#Funcion que se usa cuando sólo se tienen archivos de musica, similar a la función muestra música
+def solo_musica(root,nombre):
 	root.destroy()
 	pantalla_musica = Tk()
 	pantalla_musica.title("Reproductor")
@@ -235,17 +315,20 @@ def muestra_musica(root,nombre):
 			titulo=Label(pantalla_musica,text=audio)
 			titulo.pack()
 	sigue = True
-
+	
 	boton_atras=Button(pantalla_musica,text="INICIAR",height=5, width=20,command=lambda:nueva_rep(pantalla_musica,path,archivos_music,nombre))
 	boton_atras.place(x=150,y=50)
 	
-	#Boton para regresar a la pantalla anterior
-	im_regresar=PhotoImage(file='atras_logo.png')
-	boton_atras=Button(pantalla_musica,image=im_regresar,height=150, width=150,command=lambda:info_usbs(pantalla_musica,nombre))
-	boton_atras.place(x=800,y=500)
-
+	#Boton para regresar a la pantalla anteriorleer_usbs
+	try:
+		im_regresar=PhotoImage(file='atras_logo.png')
+		boton_atras=Button(pantalla_musica,image=im_regresar,height=150, width=150,command=lambda:leer_usbs(pantalla_musica))
+		boton_atras.place(x=800,y=500)
+	except:
+		print("Presiona otra vez para salir")
 	pantalla_musica.mainloop()
 
+#Función para abrir las imágenes
 def abre_imagen(path, archivos):
 	for imagen in archivos:
 		#Asignamos la ruta del archivo al reproductor
@@ -257,7 +340,39 @@ def abre_imagen(path, archivos):
 		#Detenemos el reproductor.
 		media.stop()
 
+#Funcion utilizada cuando se escoge la opción de imágenes
 def muestra_imagen(root,nombre):
+	root.destroy()
+	pantalla_imagen = Tk()
+	pantalla_imagen.title("Archivos de Imagen")
+	pantalla_imagen.attributes('-fullscreen', True) #Maximiza la pantalla
+	#geometry('1100x700')
+	pantalla_imagen.config(bg="#e89541")
+
+	#Se obtiene el nombre del usuario
+	user=getuser()
+	#Se especifica el directorio que contiene las usb
+	path="/media/"+user+"/" + nombre+"/"
+	directorio = pathlib.Path(path)
+	#Crea una lista con todos los archivos con formato de imagen
+	archivos_image=[]
+	for fichero in directorio.iterdir():
+		formato = fichero.suffix
+		if formato == ".jpg" or formato==".png" or formato == ".gif":
+			nombre_archivo=str(fichero)
+			archivos_image.append(nombre_archivo[len(path):])
+	#Llama a la función que se encarga de abrir imágenes
+	abre_imagen(path,archivos_image)
+	
+	#Boton para regresar a la pantalla anterior
+	im_regresar=PhotoImage(file='atras_logo.png')
+	boton_atras=Button(pantalla_imagen,image=im_regresar,height=150, width=150,command=lambda:info_usbs(pantalla_imagen,nombre))
+	boton_atras.place(x=800,y=500)
+
+	pantalla_imagen.mainloop()
+
+#Función utilizada cuando sólo hay archivo de imágenes, similar a la función muestra imagen
+def solo_imagen(root,nombre):
 	root.destroy()
 	pantalla_imagen = Tk()
 	pantalla_imagen.title("Archivos de Imagen")
@@ -282,35 +397,44 @@ def muestra_imagen(root,nombre):
 	
 	#Boton para regresar a la pantalla anterior
 	im_regresar=PhotoImage(file='atras_logo.png')
-	boton_atras=Button(pantalla_imagen,image=im_regresar,height=150, width=150,command=lambda:info_usbs(pantalla_imagen,nombre))
+	boton_atras=Button(pantalla_imagen,image=im_regresar,height=150, width=150,command=lambda:leer_usbs(pantalla_imagen))
 	boton_atras.place(x=800,y=500)
 
 	pantalla_imagen.mainloop()
 
-def lista_video(root,videos,nombre):
+#FUnción para abrir un video
+def abre_video(path, nombre_video):
+	#Se crea un objeto tipo video
+	vlc_instance = vlc.Instance()
+	player = vlc_instance.media_player_new()
+	media = vlc_instance.media_new(path+nombre_video)
+	player.set_media(media)
+	#Se reproduce el video y se espera a que termine para continuar
+	player.play()
+	time.sleep(1.5)
+	duration = player.get_length() / 1000
+	time.sleep(duration)
+	player.stop()
+
+#Función que genera un boton por cada video
+def genera_boton_video(root,nombre,titulo,path):
+	#Se crea boton para poder seleccionar el video deseado
+	titulo=Button(root, height=1, width=15, text=nombre, command=lambda:abre_video(path,nombre))
+	titulo.pack()
+
+#Función que muestra la lista de todos los videos disponibles
+def lista_video(root,videos,path,nombre):
 	root.destroy()
 	pantalla_video = Tk()
 	pantalla_video.title("Archivos de Video")
 	pantalla_video.attributes('-fullscreen', True) #Maximiza la pantalla
 	#geometry('1100x700')
 	pantalla_video.config(bg="#e89541")
-	
-	nombre_titulo=[]
-	botones = []
+
+	#por cada video, manda a llamar a la función que creará su botón 
 	for i in range(len(videos)):
-		nombre_titulo.append("text"+str(i))
-		botones.append("boton"+str(i))
-
-	for i in range(len(nombre_titulo)):
-		nombre_titulo[i]=Label(pantalla_video,text=str(i) + " --> " + videos[i])
-		nombre_titulo[i].pack()
-		#Boton para seleccionar archivo
-	
-	#seleccionar=Text(pantalla_video,height=1, width=5)
-	#seleccionar.pack()
-	boton_sel=Button(pantalla_video, height=1, width=10, text="Seleccionar", command=lambda:abre_video(pantalla_video,path,videos))
-	boton_sel.pack()
-
+		genera_boton_video(pantalla_video,videos[i], "b"+str(i),path)
+		
 	#Boton para regresar a la pantalla anterior
 	im_regresar=PhotoImage(file='atras_logo.png')
 	boton_atras=Button(pantalla_video,image=im_regresar,height=150, width=150,command=lambda:info_usbs(pantalla_video,nombre))
@@ -318,8 +442,8 @@ def lista_video(root,videos,nombre):
 
 	pantalla_video.mainloop()
 
+#Función que reproduce un video tras otro
 def reproduce_videos(root,path,archivos):
-
 	for video in archivos:
 		vlc_instance = vlc.Instance()
 		player = vlc_instance.media_player_new()
@@ -331,6 +455,7 @@ def reproduce_videos(root,path,archivos):
 		time.sleep(duration)
 		player.stop()
 
+#Función para mostrar videos cuando se seleccione esta opción
 def muestra_video(root,nombre):
 	root.destroy()
 	pantalla_opciones = Tk()
@@ -344,7 +469,44 @@ def muestra_video(root,nombre):
 	#Se especifica el directorio que contiene las usb
 	path="/media/"+user+"/" + nombre+"/"
 	directorio = pathlib.Path(path)
-	letters=4
+	#Crea lista con archivos de video
+	archivos_video=[]
+	for fichero in directorio.iterdir():
+		formato = fichero.suffix
+		if formato == ".mp4":
+			nombre_archivo=str(fichero)
+			archivos_video.append(nombre_archivo[len(path):])
+		
+	#Boton para reproducir todos los videos
+	boton_todos=Button(pantalla_opciones,text="Reproducir todos",height=5, width=15,command=lambda:reproduce_videos(pantalla_opciones,path,archivos_video))
+	boton_todos.place(x=200,y=200)
+	
+	#Boton para elegir video
+	boton_elegir=Button(pantalla_opciones,text="Elegir video",height=5, width=15, command=lambda:lista_video(pantalla_opciones,archivos_video,path,nombre))
+	boton_elegir.place(x=500,y=200)
+
+	#Boton para regresar a la pantalla anterior
+	im_regresar=PhotoImage(file='atras_logo.png')
+	boton_atras=Button(pantalla_opciones,image=im_regresar,height=150, width=150,command=lambda:info_usbs(pantalla_opciones,nombre))
+	boton_atras.place(x=800,y=500)
+
+	pantalla_opciones.mainloop()
+
+#Función que se usa cuando sólo se tienen archivos de video, similar a muestra_video
+def solo_video(root,nombre):
+	root.destroy()
+	pantalla_opciones = Tk()
+	pantalla_opciones.title("Opciones de reproduccion")
+	pantalla_opciones.attributes('-fullscreen', True) #Maximiza la pantalla
+	#geometry('1100x700')
+	pantalla_opciones.config(bg="#e89541")
+
+	#Se obtiene el nombre del usuario
+	user=getuser()
+	#Se especifica el directorio que contiene las usb
+	path="/media/"+user+"/" + nombre+"/"
+	directorio = pathlib.Path(path)
+	
 	archivos_video=[]
 	for fichero in directorio.iterdir():
 		formato = fichero.suffix
@@ -355,21 +517,18 @@ def muestra_video(root,nombre):
 	#Boton para reproducir todos los videos
 	boton_todos=Button(pantalla_opciones,text="Reproducir todos",height=5, width=15,command=lambda:reproduce_videos(pantalla_opciones,path,archivos_video))
 	boton_todos.place(x=200,y=200)
-	nombre_titulo=[]
-	botones = []
-	for i in range(len(archivos_video)):
-		nombre_titulo.append("text"+str(i))
-		botones.append("boton"+str(i))
+	
 	#Boton para elegir video
-	boton_elegir=Button(pantalla_opciones,text="Elegir video",height=5, width=15, command=lambda:lista_video(pantalla_opciones,archivos_video,nombre))
+	boton_elegir=Button(pantalla_opciones,text="Elegir video",height=5, width=15, command=lambda:lista_video(pantalla_opciones,archivos_video,path,nombre))
 	boton_elegir.place(x=500,y=200)
 
 	#Boton para regresar a la pantalla anterior
 	im_regresar=PhotoImage(file='atras_logo.png')
-	boton_atras=Button(pantalla_opciones,image=im_regresar,height=150, width=150,command=lambda:info_usbs(pantalla_opciones,nombre))
+	boton_atras=Button(pantalla_opciones,image=im_regresar,height=150, width=150,command=lambda:leer_usbs(pantalla_opciones))
 	boton_atras.place(x=800,y=500)
 
 	pantalla_opciones.mainloop()
+
 #Función para la pantalla del menu principal
 def menu(root):
 	#Se destruye la ventana recibida.
