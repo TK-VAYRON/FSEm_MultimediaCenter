@@ -152,7 +152,6 @@ def leer_usbs(root):
 	
 	pantalla_usbs.mainloop()
 
-
 def info_usbs(root,nombre):
 	root.destroy()
 	pantalla_infoUSB = Tk()
@@ -333,6 +332,7 @@ def abre_imagen(path, archivos):
 	for imagen in archivos:
 		#Asignamos la ruta del archivo al reproductor
 		media = vlc.MediaPlayer(path+imagen)
+		media.set_fullscreen(True) 
 		#Reproducimos el archivo asignado
 		media.play()
 		#Esperamos tres segundos.
@@ -615,9 +615,13 @@ if __name__ == "__main__":
 	titulo=Label(pantalla_inicio,text="Centro Multimedia FSE")
 	titulo.pack()
 	
+	imagen = PhotoImage(file = "portada.png")
+	background = Label(image = imagen)
+	background.place(x = 0, y = 0, relwidth = 1, relheight = 1)
+
 	#Crea botón que llama al menu principal y se envia la ventana actual.
 	im_inicio=PhotoImage(file='bienvenido_logo.png')
 	boton_inicio=Button(pantalla_inicio,image=im_inicio,command=lambda:menu(pantalla_inicio))
-	boton_inicio.place(x=200,y=500)  
+	boton_inicio.place(x=100,y=30)  
 
 	pantalla_inicio.mainloop()
